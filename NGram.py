@@ -342,7 +342,7 @@ class NGram:
         #for x in self.vocabulary:
          #    print(x)
 
-        #self.constructFrequencyTable()
+        self.constructFrequencyTable()
 
         #for x in self.frequencyTable:
          #    print(x)
@@ -351,9 +351,9 @@ class NGram:
             #     for z in self.frequencyTable[x][y]:
              #        print(x+y+z)
 
-        #self.populateFrequencyTable()
+        self.populateFrequencyTable()
 
-        #self.createConditionalProbabilityTable()
+        self.createConditionalProbabilityTable()
 
         #print(self.frequencyTable)
 
