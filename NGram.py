@@ -215,6 +215,41 @@ class NGram:
         if self.vocabularyType == '2':
             self.createIsAlphaProbabilityTable()
         # Else do the regular translation of the frequency table
+        else:
+            if self.ngramSize == 3:
+                for lang in self.frequencyTable:
+                    for first in self.frequencyTable[lang]:
+                        self.conditionalProbabilityTable[lang][first] = {}
+                        for second in self.frequencyTable[lang][first]:
+                            self.conditionalProbabilityTable[lang][first][second] = {
+                            }
+
+                            denominator = sum(
+                                self.frequencyTable[lang][first][second].values()) 
+                            for third in self.frequencyTable[lang][first][second]:
+                                numerator = self.frequencyTable[lang][first][second][third]
+                                conditionalProb = numerator/denominator
+                                self.conditionalProbabilityTable[lang][first][second][third] = conditionalProb
+            if self.ngramSize == 2:
+                for lang in self.frequencyTable:
+                    for first in self.frequencyTable[lang]:
+                        self.conditionalProbabilityTable[lang][first] = {}
+
+                        denominator = sum(
+                            self.frequencyTable[lang][first].values()) 
+                        for second in self.frequencyTable[lang][first]:
+                            numerator = self.frequencyTable[lang][first][second]
+                            conditionalProb = numerator/denominator
+                            self.conditionalProbabilityTable[lang][first][second] = conditionalProb
+            if self.ngramSize == 1:
+                for lang in self.frequencyTable:
+                    denominator = sum(
+                        self.frequencyTable[lang].values()) 
+                    for first in self.frequencyTable[lang]:
+                        numerator = self.frequencyTable[lang][first]
+                        conditionalProb = numerator/denominator
+                        self.conditionalProbabilityTable[lang][first] = conditionalProb
+
 
     def createIsAlphaProbabilityTable(self):
         # Since this ngram model has a lot of empty entries, we need to compute the denominator dynamically.
@@ -304,39 +339,39 @@ class NGram:
         self.constructVocabulary()
 
         # If you uncomment this make sure your console supports utf-16 or it will error
-        # for x in self.vocabulary:
-        #     print(x)
+        for x in self.vocabulary:
+             print(x)
 
         self.constructFrequencyTable()
 
-        # for x in self.frequencyTable:
-        #     print(x)
-        #     for y in self.frequencyTable[x]:
-        #         print(x+y)
-        #         for z in self.frequencyTable[x][y]:
-        #             print(x+y+z)
+        for x in self.frequencyTable:
+             print(x)
+             for y in self.frequencyTable[x]:
+                 print(x+y)
+                 for z in self.frequencyTable[x][y]:
+                     print(x+y+z)
 
         self.populateFrequencyTable()
 
         self.createConditionalProbabilityTable()
 
-        # print(self.frequencyTable)
+        print(self.frequencyTable)
 
-        # print(sum(self.frequencyTable['es'].values()))
+        print(sum(self.frequencyTable['es'].values()))
 
-        # print(len(self.frequencyTable['es']))
+        print(len(self.frequencyTable['es']))
 
-        # print(self.conditionalProbabilityTable)
+        print(self.conditionalProbabilityTable)
 
-        # print(self.getConditionalProbability('es', 'ç'))
+        print(self.getConditionalProbability('es', 'ç'))
 
-        # print(self.getConditionalProbability('es', 'cao'))
+        print(self.getConditionalProbability('es', 'cao'))
 
-        # for lang in self.frequencyTable:
-        #     for x in self.frequencyTable[lang]:
-        #         for y in self.frequencyTable[lang][x]:
-        #             for z in self.frequencyTable[lang][x][y]:
-        #                 if(self.frequencyTable[lang][x][y][z] > 0):
-        #                     print()
-        #                     print(x+y+z + ' --- ' +
-        #                           str(self.frequencyTable[lang][x][y][z]))
+        for lang in self.frequencyTable:
+             for x in self.frequencyTable[lang]:
+                 for y in self.frequencyTable[lang][x]:
+                     for z in self.frequencyTable[lang][x][y]:
+                         if(self.frequencyTable[lang][x][y][z] > 0):
+                             print()
+                             print(x+y+z + ' --- ' +
+                                   str(self.frequencyTable[lang][x][y][z]))
