@@ -2,8 +2,9 @@ import io
 import os
 import re
 import math
+import numpy as np
 import pandas as pd
-from NGram import NGram
+from BYOM import BYOM
 
 """
 Project 2: Naive Bayes Classifier
@@ -11,7 +12,7 @@ COMP 472 NN
 DUE: April 5th, 2020
 Samantha Yuen (40033121), Andrew Marcos (40011252), Michael Gagnon (40030481)
 Purpose:
-    The following code will evaluate an ngram model (of object NGram) based on a given test file
+    The following code will evaluate our word length based BYOM model (of object BYOM) based on a given test file
 
 Variables
     languages -- list, 6 strings of length 2 representing total language classes modelled
@@ -113,13 +114,15 @@ def computeWeightedF1():
     denominator = computeTotalExamples()
     return (nominator/denominator)
 
-def testLine(ngram, tweet):
+def testLine(byom, tweet):
     results = ['', 0.0] # predicted language and score
+    wordLengthArray = []
+    averageWordLengths = 0.0
 
-    totalTrainingExamples = sum(ngram.languageCounter.values())
+    totalTrainingExamples = sum(byom.languageCounter.values())
 
     # Initialize scores with priors, default is True (include priors)
-    if ngram.prior == False:
+    if byom.prior == False:
         scores = {  'eu':0.0,
                     'ca':0.0, 
                     'gl':0.0, 
@@ -127,83 +130,42 @@ def testLine(ngram, tweet):
                     'en':0.0, 
                     'pt':0.0}
     else:
-        scores = {  'eu': math.log10(ngram.languageCounter['eu']/totalTrainingExamples), 
-                    'ca': math.log10(ngram.languageCounter['ca']/totalTrainingExamples), 
-                    'gl': math.log10(ngram.languageCounter['gl']/totalTrainingExamples), 
-                    'es': math.log10(ngram.languageCounter['es']/totalTrainingExamples), 
-                    'en': math.log10(ngram.languageCounter['en']/totalTrainingExamples), 
-                    'pt': math.log10(ngram.languageCounter['pt']/totalTrainingExamples)}
+        scores = {  'eu': math.log10(byom.languageCounter['eu']/totalTrainingExamples), 
+                    'ca': math.log10(byom.languageCounter['ca']/totalTrainingExamples), 
+                    'gl': math.log10(byom.languageCounter['gl']/totalTrainingExamples), 
+                    'es': math.log10(byom.languageCounter['es']/totalTrainingExamples), 
+                    'en': math.log10(byom.languageCounter['en']/totalTrainingExamples), 
+                    'pt': math.log10(byom.languageCounter['pt']/totalTrainingExamples)}
     #print(scores)
     # Compute scores for each language 
     for lang in languages:
-        # Unigram: ngram = 1, 
-        if ngram.ngramSize == 1:
-            for character in tweet:
-                # Vocabulary = 0 (all lowercase)
-                if ngram.vocabularyType == '0':
-                    if character.lower() in ngram.vocabulary:
-                        scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
-                # Vocabulary = 1 (Upper and lowercase)
-
-                if character in ngram.vocabulary:
-                    scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
-
-        # Bigram: ngram = 2,
-        if ngram.ngramSize == 2:
-            previousChar = None
-            for character in tweet:
-                # If we've reached an invalid char for V = 0, the next bigram does not count
-                if ngram.vocabularyType == '0':
-                    if character.lower() not in ngram.vocabulary:
-                        previousChar = None
-                        continue
-                    character = character.lower()
-                # If we've reached an invalid char for V = [1,2], the next bigram does not count
-                else: 
-                    if character not in ngram.vocabulary:
-                        previousChar = None
-                        continue
-                if previousChar is not None:
-                    # Vocabulary = 2 (isalpha())
-                    if previousChar in ngram.frequencyTable[lang]:
-                        scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
-                    # Vocabulary = 0 (all lowercase)
-                    # Vocabulary = 1 (Upper and lowercase)
-                    scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
-                previousChar = character
-        # Trigram: ngram = 3
-        if ngram.ngramSize == 3:
-            firstChar = None
-            secondChar = None
-            for character in tweet:
-                # If we've reached an invalid char for V = 0, the next trigram does not count
-                if ngram.vocabularyType == '0':
-                    if character.lower() not in ngram.vocabulary:
-                        firstChar = None
-                        secondChar = None
-                        continue
-                    character = character.lower()
-                # If we've reached an invalid char for V = 0, the next trigram does not count
+        words = re.split(' ', tweet)
+        for word in words:
+            for char in word:
+                # V = 0, lowercase
+                if char.lower() in byom.vocabulary:
+                    continue
                 else:
-                    if character not in ngram.vocabulary:
-                        firstChar = None 
-                        secondChar = None
-                        continue
-                # Continue building the trigram
-                if firstChar is None: 
-                    firstChar = character
+                    word.replace(char, '')
+                # V = 1,2 upper + lower + isalpha
+                if char in byom.vocabulary:
                     continue
-                if secondChar is None:
-                    secondChar = character
-                    continue
-                # Vocabulary = 2 (isalpha())
-                # Vocabulary = 0 (all lowercase)
-                # Vocabulary = 1 (Upper and lowercase)
-                scores[lang] += math.log10(ngram.getConditionalProbability(lang, firstChar+secondChar+character))
-                firstChar = secondChar
-                secondChar = character
+                else:
+                    word.replace(char, '')
+            # Either the word doesnt have any valid chars or its too long eg(a random assortment of chars, not a word)
+            if(len(word) != 0 and len(word) < 51):
+                wordLengthArray.append(len(word))
+                scores[lang] += math.log10(byom.getConditionalProbability('count', lang, len(word)))
+        # It's possible a tweet doesn't have any valid words
+        if wordLengthArray:
+            averageWordLengths = int(round(np.mean(wordLengthArray), 0))
+            scores[lang] += math.log10(byom.getConditionalProbability('mean', lang, averageWordLengths))
+            stdvWordLengths = int(round(np.std(wordLengthArray), 0))
+            print(stdvWordLengths)
+            scores[lang] += math.log10(byom.getConditionalProbability('dev', lang, stdvWordLengths))
+        wordLengthArray = []
     # End of score computation
-   
+
     # Store the language that obtained the highest score.
     results[0] = max(scores, key=scores.get) # get lang with max score
     results[1] = format(max(scores.values()), ".3E") # get max value among all scores
@@ -213,18 +175,15 @@ def testLine(ngram, tweet):
     return results
     #End of testLine() function
 
-
-def evaluate(ngram):
+def evalBYOM(byom):
     traceFileName = str(os.getcwd()+'/output/'+\
-                                'trace_' + str(ngram.vocabularyType) +\
-                                '_' + str(ngram.ngramSize) +\
-                                '_' + str(ngram.smoothing) + '.txt')
+                                'traceBYOM_' + str(byom.vocabularyType) +\
+                                '_' + str(byom.smoothing) + '.txt')
                                 # EX: "trace_V_n_d.txt" in output folder
     os.makedirs(os.path.dirname(traceFileName), exist_ok=True)
     evalFileName = str(os.getcwd()+'/output/'+\
-                                'eval_'+ str(ngram.vocabularyType) +\
-                                '_' + str(ngram.ngramSize) +\
-                                '_' + str(ngram.smoothing) + '.txt')
+                                'evalBYOM_'+ str(byom.vocabularyType) +\
+                                '_' + str(byom.smoothing) + '.txt')
                                 # EX: "eval_V_n_d.txt" in output folder
     os.makedirs(os.path.dirname(evalFileName), exist_ok=True)
 
@@ -234,17 +193,14 @@ def evaluate(ngram):
     with open(evalFileName, 'w') as eval:
         eval.write('')
 
-    # Open the testing file
-    with open(ngram.testingFile, 'r', encoding="utf-8") as train:
-        # Parse the first line
+    with open(byom.trainingFile, 'r', encoding="utf-8") as train:
+        # Example: 439764933119868928	bordatxiki	eu	Oidek mami!!! Jajajjjajaja puta graxioxa
+
         for line in train:
-            if line == "\n":
-                break
-            params = []
             params = re.split(r'\t+', line)
             label = params[2] 
 
-            score_results = testLine(ngram, params[3])
+            score_results = testLine(byom, params[3])
             resultsDF.loc[score_results[0],label] += 1
 
             # append results to trace
@@ -280,5 +236,5 @@ def evaluate(ngram):
                     str(recalls['es']) + '  ' + str(recalls['en']) + '  ' + str(recalls['pt']) + '  ' + '\n' +
                     str(macroF1) + '  ' + str(weightF1))
     print("evaluation file completed")
-    # End of evaluate() function
-    
+
+            

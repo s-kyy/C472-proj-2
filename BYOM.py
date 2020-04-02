@@ -9,7 +9,7 @@ DUE: April 5th, 2020
 Samantha Yuen (40033121), Andrew Marcos (40011252), Michael Gagnon (40030481)
 Purpose:
 This is the Build Your Own Model, it contains the necessary functions to build a probability 
-table based on the legnth of words in tweets, the mean and the standard deviation of the
+table based on the length of words in tweets, the mean and the standard deviation of the
 word length across a tweet. Besides the ordering of letters, another characterstic of 
 any language is the length of the words that it uses. For example, on average the length of
 english words is much lower than the length of german words because of the nature of nouns in german. This
@@ -48,12 +48,13 @@ Example Formats of frequency & conditional probability tables
 
 
 class BYOM:
-    def __init__(self, vocabularyType, smoothing, trainingFile, testingFile):
+    def __init__(self, vocabularyType, smoothing, trainingFile, testingFile, prior = True):
         self.vocabularyType = vocabularyType
         self.trainingFile = trainingFile
         self.testingFile = testingFile
         self.smoothing = smoothing
         self.vocabulary = {}
+        self.prior = prior
         self.frequencyTable = {}
         self.conditionalProbabilityTable = {}
         self.languageCounter = {}

@@ -3,6 +3,7 @@ import os
 from NGram import NGram
 from BYOM import BYOM
 import evaluate
+import evalBYOM
 
 """
 Project 2: Naive Bayes Classifier
@@ -50,22 +51,28 @@ def verifyArgs():
         print('Ivalid smoothing factor, terminating program...')
         sys.exit()
     
-    if int(sys.argv[6]) not in [1, 0]:
-        print('Invalid integer for boolean value. Enter 1 for True or 0 for False, terminating program...')
+    if sys.argv[6] not in ['0', '1']:
+        print('Invalid Prior. Enter 1 for True or 0 for False, terminating program...')
+        sys.exit()
 
     if sys.argv[7] not in ['0', '1']:
-        print('Invalid BYOM value, terminating program...')
+        print('Invalid BYOM value. Enter 1 for True or 0 for False, terminating program...')
         sys.exit()
 
 
 # Main Method
 if __name__ == "__main__":
     verifyArgs()
+    # Build and test with BYOM code,
     if sys.argv[7] == '1':
         byom = BYOM(sys.argv[1],
-                    float(sys.argv[3]), sys.argv[4], sys.argv[5])
+                    float(sys.argv[3]), sys.argv[4], sys.argv[5], bool(int(sys.argv[6])))
 
         byom.initialize()
+
+        evalBYOM.evalBYOM(byom)
+    
+    # Otherwise build and test Ngram model.
     else:
 
         ngram = NGram(sys.argv[1], int(sys.argv[2]),
