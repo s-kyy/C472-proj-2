@@ -16,6 +16,7 @@ Object Variables
     smoothing (specifies the smoothing factor for empty entries)
     trainingFile (specifies the name of the training file)
     testingFile (specifies the name of the testing file)
+    prior (specifies the use of priors to compute the scores when testing an ngram model, True by default)
     vocabulary (specifies all valid characters in our vocabulary)
     frequencyTable (contains the frequencies of each ngram)
     conditionalProbabilityTable (contains the conditional probs of all ngrams)
@@ -45,12 +46,13 @@ Example Formats of frequency & conditional probability tables
 
 
 class NGram:
-    def __init__(self, vocabularyType, ngramSize, smoothing, trainingFile, testingFile):
+    def __init__(self, vocabularyType, ngramSize, smoothing, trainingFile, testingFile, prior = True):
         self.vocabularyType = vocabularyType
         self.ngramSize = ngramSize
         self.smoothing = smoothing
         self.trainingFile = trainingFile
         self.testingFile = testingFile
+        self.prior = prior
         self.vocabulary = {}
         self.frequencyTable = {}
         self.conditionalProbabilityTable = {}

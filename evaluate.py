@@ -119,13 +119,21 @@ def testLine(ngram, tweet):
 
     totalTrainingExamples = sum(ngram.languageCounter.values())
 
-    # Initialize scores with priors
-    scores = {  'eu': math.log10(ngram.languageCounter['eu']/totalTrainingExamples), 
-                'ca': math.log10(ngram.languageCounter['ca']/totalTrainingExamples), 
-                'gl': math.log10(ngram.languageCounter['gl']/totalTrainingExamples), 
-                'es': math.log10(ngram.languageCounter['es']/totalTrainingExamples), 
-                'en': math.log10(ngram.languageCounter['en']/totalTrainingExamples), 
-                'pt': math.log10(ngram.languageCounter['pt']/totalTrainingExamples)}
+    # Initialize scores with priors, default is True (include priors)
+    if ngram.prior == False:
+        scores = {  'eu':0.0,
+                    'ca':0.0, 
+                    'gl':0.0, 
+                    'es':0.0, 
+                    'en':0.0, 
+                    'pt':0.0}
+    else:
+        scores = {  'eu': math.log10(ngram.languageCounter['eu']/totalTrainingExamples), 
+                    'ca': math.log10(ngram.languageCounter['ca']/totalTrainingExamples), 
+                    'gl': math.log10(ngram.languageCounter['gl']/totalTrainingExamples), 
+                    'es': math.log10(ngram.languageCounter['es']/totalTrainingExamples), 
+                    'en': math.log10(ngram.languageCounter['en']/totalTrainingExamples), 
+                    'pt': math.log10(ngram.languageCounter['pt']/totalTrainingExamples)}
     #print(scores)
     # Compute scores for each language 
     for lang in languages:
