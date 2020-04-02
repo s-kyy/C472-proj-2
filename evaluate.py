@@ -137,19 +137,10 @@ def testLine(ngram, tweet):
                     if character.lower() in ngram.vocabulary:
                         scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
                 # Vocabulary = 1 (Upper and lowercase)
-                if ngram.vocabularyType == '1':
-                    if character in ngram.vocabulary:
-                        scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
-                # Vocabulary = 2 (isalpha())
-                else:
-                    if character in ngram.vocabulary:
-                        if character in ngram.frequencyTable[lang]:
-                            scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
-                        else:
-                            actualRowCount = len(ngram.frequencyTable[lang])
-                            amountOfUnseenChars = ngram.totalRowCount - actualRowCount
-                            denominator = sum(ngram.frequencyTable[lang].values()) + (amountOfUnseenChars*ngram.smoothing)
-                            scores[lang] += math.log10(ngram.smoothing/denominator)
+
+                if character in ngram.vocabulary:
+                    scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
+
         # Bigram: ngram = 2,
         if ngram.ngramSize == 2:
             previousChar = None
@@ -167,14 +158,8 @@ def testLine(ngram, tweet):
                         continue
                 if previousChar is not None:
                     # Vocabulary = 2 (isalpha())
-                    if ngram.vocabularyType == '2':
-                        if previousChar in ngram.frequencyTable[lang]:
-                            scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
-                        else:
-                            actualRowCount = len(ngram.frequencyTable[lang][previousChar])
-                            amountOfUnseenChars = ngram.totalRowCount - actualRowCount
-                            denominator = sum(ngram.frequencyTable[lang][previousChar].values()) + (amountOfUnseenChars * ngram.smoothing)
-                            scores[lang] += math.log10(ngram.smoothing/denominator)
+                    if previousChar in ngram.frequencyTable[lang]:
+                        scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
                     # Vocabulary = 0 (all lowercase)
                     # Vocabulary = 1 (Upper and lowercase)
                     scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
@@ -205,22 +190,6 @@ def testLine(ngram, tweet):
                     secondChar = character
                     continue
                 # Vocabulary = 2 (isalpha())
-                if ngram.vocabularyType == '2':
-                    if firstChar not in ngram.frequencyTable[lang]:
-                        actualRowCount = len(ngram.frequencyTable[lang][firstChar][secondChar])
-                        amountOfUnseenChars = ngram.totalRowCount - actualRowCount
-                        denominator = sum(ngram.frequencyTable[lang][firstChar][secondChar].values()) + (amountOfUnseenChars * ngram.smoothing)
-                        scores[lang] += math.log10(ngram.smoothing/denominator)
-                    elif secondChar not in ngram.frequencyTable[lang][firstChar]:
-                        actualRowCount = len(ngram.frequencyTable[lang][firstChar][secondChar])
-                        amountOfUnseenChars = ngram.totalRowCount - actualRowCount
-                        denominator = sum(ngram.frequencyTable[lang][firstChar][secondChar].values()) + (amountOfUnseenChars * ngram.smoothing)
-                        scores[lang] += math.log10(ngram.smoothing/denominator)
-                    elif character not in ngram.frequencyTable[lang][firstChar][secondChar]:
-                        actualRowCount = len(ngram.frequencyTable[lang][firstChar][secondChar])
-                        amountOfUnseenChars = ngram.totalRowCount - actualRowCount
-                        denominator = sum(ngram.frequencyTable[lang][firstChar][secondChar].values()) + (amountOfUnseenChars * ngram.smoothing)
-                        scores[lang] += math.log10(ngram.smoothing/denominator)
                 # Vocabulary = 0 (all lowercase)
                 # Vocabulary = 1 (Upper and lowercase)
                 scores[lang] += math.log10(ngram.getConditionalProbability(lang, firstChar+secondChar+character))
