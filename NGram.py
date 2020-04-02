@@ -4,7 +4,7 @@ import re
 """
 Project 2: Naive Bayes Classifier
 COMP 472 NN
-DUE: Mar 29th, 2020
+DUE: April 5th, 2020
 Samantha Yuen (40033121), Andrew Marcos (40011252), Michael Gagnon (40030481)
 Purpose:
 This is the ngram model, it contains the frequency table and the conditional probability table to

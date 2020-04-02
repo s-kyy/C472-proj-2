@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 mine.py
+test.txt
 
 # C extensions
 *.so

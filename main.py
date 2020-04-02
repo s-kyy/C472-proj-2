@@ -1,6 +1,7 @@
 import sys
 import os
 from NGram import NGram
+import evaluate
 
 """ 
 Project 2: Naive Bayes Classifier
@@ -57,3 +58,5 @@ if __name__ == "__main__":
                   float(sys.argv[3]), sys.argv[4], sys.argv[5])
 
     ngram.initialize()
+
+    evaluate.evaluate(ngram)
