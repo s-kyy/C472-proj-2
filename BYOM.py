@@ -193,8 +193,8 @@ class BYOM:
 
         self.createConditionalProbabilityTable()
 
-        for countType in self.conditionalProbabilityTable:
-            for lang in self.conditionalProbabilityTable[countType]:
-                for num in self.conditionalProbabilityTable[countType][lang]:
-                    print(countType + ' ' + lang + ' ' + str(num) +
-                          ': ' + str(self.conditionalProbabilityTable[countType][lang][num]))
+        # for countType in self.conditionalProbabilityTable:
+        #     for lang in self.conditionalProbabilityTable[countType]:
+        #         for num in self.conditionalProbabilityTable[countType][lang]:
+        #             print(countType + ' ' + lang + ' ' + str(num) +
+        #                   ': ' + str(self.conditionalProbabilityTable[countType][lang][num]))

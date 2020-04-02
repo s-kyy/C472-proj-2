@@ -161,7 +161,6 @@ def testLine(byom, tweet):
             averageWordLengths = int(round(np.mean(wordLengthArray), 0))
             scores[lang] += math.log10(byom.getConditionalProbability('mean', lang, averageWordLengths))
             stdvWordLengths = int(round(np.std(wordLengthArray), 0))
-            print(stdvWordLengths)
             scores[lang] += math.log10(byom.getConditionalProbability('dev', lang, stdvWordLengths))
         wordLengthArray = []
     # End of score computation
