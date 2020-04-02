@@ -16,8 +16,8 @@ Methods:
   verifyArgs() -- This verifies all input arguments from the command line
 
 When running on the command line, use the following form:
-    python main.py V SizeOfNGram SmoothingFactor TrainingFile, TestingFile
-    eg: python main.py 1 3 0.1 training-tweets.txt test-tweets-given.txt
+    python main.py V SizeOfNGram SmoothingFactor TrainingFile TestingFile Prior[1,0]
+    eg: python main.py 1 3 0.1 training-tweets.txt test-tweets-given.txt 1
     
 """
 
@@ -48,6 +48,9 @@ def verifyArgs():
     if float(sys.argv[3]) > 1 or float(sys.argv[3]) < 0:
         print('Ivalid smoothing factor, terminating program...')
         sys.exit()
+    
+    if int(sys.argv[6]) not in [1, 0]:
+        print('Invalid integer for boolean value. Enter 1 for True or 0 for False, terminating program...')
 
 
 # Main Method
@@ -55,7 +58,7 @@ if __name__ == "__main__":
     verifyArgs()
 
     ngram = NGram(sys.argv[1], int(sys.argv[2]),
-                  float(sys.argv[3]), sys.argv[4], sys.argv[5])
+                  float(sys.argv[3]), sys.argv[4], sys.argv[5], bool(int(sys.argv[6])))
 
     ngram.initialize()
 
