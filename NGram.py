@@ -27,7 +27,6 @@ Methods:
   constructVocabulary() -- This creates all of the letters that can be used with the vocabulary type.
   constructFrequencyTable() -- This constructs all of the entries for type of ngram used.
   populateFrequencyTable() -- This reads a training set and saves the frequencies of each ngram.
-  smoothFrequencyTable() -- This adds a smoothing factor to all of the entries that are 0.
   createConditionalProbabilityTable() -- This translates the frequency table to a conditional probability table.
   initialize() -- This calls all of the methods required to set up the ngram models.
   createIsAlphaProbabilityTable() -- This creates the dynamic probability table for the isalhpa vocabulary
