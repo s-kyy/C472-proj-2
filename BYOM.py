@@ -177,6 +177,8 @@ class BYOM:
                 self.conditionalProbabilityTable['count'][lang][num] = conditionalProbCount
                 self.conditionalProbabilityTable['mean'][lang][num] = conditionalProbMean
                 self.conditionalProbabilityTable['dev'][lang][num] = conditionalProbDev
+            # the dev metric has one extra row for 0
+            self.conditionalProbabilityTable['dev'][lang][0] = self.frequencyTable['dev'][lang][0]/denominatorDev
 
     def getConditionalProbability(self, check, lang, num):
         return self.conditionalProbabilityTable[check][lang][num]
@@ -191,8 +193,8 @@ class BYOM:
 
         self.createConditionalProbabilityTable()
 
-        # for countType in self.conditionalProbabilityTable:
-        #     for lang in self.conditionalProbabilityTable[countType]:
-        #         for num in self.conditionalProbabilityTable[countType][lang]:
-        #             print(countType + ' ' + lang + ' ' + str(num) +
-        #                   ': ' + str(self.conditionalProbabilityTable[countType][lang][num]))
+        for countType in self.conditionalProbabilityTable:
+            for lang in self.conditionalProbabilityTable[countType]:
+                for num in self.conditionalProbabilityTable[countType][lang]:
+                    print(countType + ' ' + lang + ' ' + str(num) +
+                          ': ' + str(self.conditionalProbabilityTable[countType][lang][num]))
