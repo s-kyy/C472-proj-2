@@ -4,7 +4,7 @@ import re
 """
 Project 2: Naive Bayes Classifier
 COMP 472 NN
-DUE: Mar 29th, 2020
+DUE: April 5th, 2020
 Samantha Yuen (40033121), Andrew Marcos (40011252), Michael Gagnon (40030481)
 Purpose:
 This is the ngram model, it contains the frequency table and the conditional probability table to
@@ -16,6 +16,7 @@ Object Variables
     smoothing (specifies the smoothing factor for empty entries)
     trainingFile (specifies the name of the training file)
     testingFile (specifies the name of the testing file)
+    prior (specifies the use of priors to compute the scores when testing an ngram model, True by default)
     vocabulary (specifies all valid characters in our vocabulary)
     frequencyTable (contains the frequencies of each ngram)
     conditionalProbabilityTable (contains the conditional probs of all ngrams)
@@ -27,7 +28,6 @@ Methods:
   constructVocabulary() -- This creates all of the letters that can be used with the vocabulary type.
   constructFrequencyTable() -- This constructs all of the entries for type of ngram used.
   populateFrequencyTable() -- This reads a training set and saves the frequencies of each ngram.
-  smoothFrequencyTable() -- This adds a smoothing factor to all of the entries that are 0.
   createConditionalProbabilityTable() -- This translates the frequency table to a conditional probability table.
   initialize() -- This calls all of the methods required to set up the ngram models.
   createIsAlphaProbabilityTable() -- This creates the dynamic probability table for the isalhpa vocabulary
@@ -46,12 +46,13 @@ Example Formats of frequency & conditional probability tables
 
 
 class NGram:
-    def __init__(self, vocabularyType, ngramSize, smoothing, trainingFile, testingFile):
+    def __init__(self, vocabularyType, ngramSize, smoothing, trainingFile, testingFile, prior = True):
         self.vocabularyType = vocabularyType
         self.ngramSize = ngramSize
         self.smoothing = smoothing
         self.trainingFile = trainingFile
         self.testingFile = testingFile
+        self.prior = prior
         self.vocabulary = {}
         self.frequencyTable = {}
         self.conditionalProbabilityTable = {}
@@ -93,34 +94,33 @@ class NGram:
     def constructFrequencyTable(self):
         frequencyTable = {}
         # if we have the isalpha vocab, we cannot hardcode the freq table (it's too big!), it needs to be dynamic
-        if self.vocabularyType != '2':
+        languages = ['eu', 'ca', 'gl', 'es', 'en', 'pt']
             # Loop over vocab 1, 2, or 3 times depending on ngram size to build freq table
-            for x in self.vocabulary:
-                frequencyTable[x] = self.smoothing
-                if self.ngramSize > 1:
-                    frequencyTable[x] = {}
-                    for y in self.vocabulary:
-                        frequencyTable[x][y] = self.smoothing
-                        if self.ngramSize > 2:
-                            frequencyTable[x][y] = {}
-                            for z in self.vocabulary:
-                                frequencyTable[x][y][z] = self.smoothing
+        for lang in languages:
+            frequencyTable[lang] = {}
+            if self.vocabularyType != '2':
+                for x in self.vocabulary:
+                    frequencyTable[lang][x] = self.smoothing
+                    if self.ngramSize > 1:
+                        frequencyTable[lang][x] = {}
+                        for y in self.vocabulary:
+                            frequencyTable[lang][x][y] = self.smoothing
+                            if self.ngramSize > 2:
+                                frequencyTable[lang][x][y] = {}
+                                for z in self.vocabulary:
+                                    frequencyTable[lang][x][y][z] = self.smoothing
         self.frequencyTable = frequencyTable
 
     def populateFrequencyTable(self):
         with open(self.trainingFile, 'r', encoding="utf-8") as train:
-            innerFrequencyTable = self.frequencyTable
-            self.frequencyTable = {}
             # Example: 439764933119868928	bordatxiki	eu	Oidek mami!!! Jajajjjajaja puta graxioxa
             for line in train:
                 params = re.split(r'\t+', line)
                 language = params[2]
-                if language in self.frequencyTable:
+                if language in self.languageCounter:
                     self.languageCounter[language] += 1
                 else:
                     # First time we've encountered the language, add it to frequency and prob table
-                    self.conditionalProbabilityTable[language] = {}
-                    self.frequencyTable[language] = innerFrequencyTable
                     self.languageCounter[language] = 1
 
                 tweet = params[3]
@@ -218,6 +218,7 @@ class NGram:
         else:
             if self.ngramSize == 3:
                 for lang in self.frequencyTable:
+                    self.conditionalProbabilityTable[lang] = {}
                     for first in self.frequencyTable[lang]:
                         self.conditionalProbabilityTable[lang][first] = {}
                         for second in self.frequencyTable[lang][first]:
@@ -232,6 +233,7 @@ class NGram:
                                 self.conditionalProbabilityTable[lang][first][second][third] = conditionalProb
             if self.ngramSize == 2:
                 for lang in self.frequencyTable:
+                    self.conditionalProbabilityTable[lang] = {}
                     for first in self.frequencyTable[lang]:
                         self.conditionalProbabilityTable[lang][first] = {}
 
@@ -243,6 +245,7 @@ class NGram:
                             self.conditionalProbabilityTable[lang][first][second] = conditionalProb
             if self.ngramSize == 1:
                 for lang in self.frequencyTable:
+                    self.conditionalProbabilityTable[lang] = {}
                     denominator = sum(
                         self.frequencyTable[lang].values()) 
                     for first in self.frequencyTable[lang]:
@@ -257,6 +260,7 @@ class NGram:
         # and add this to the sum() of the appeared characters. This will give us the denom for each row.
         if self.ngramSize == 3:
             for lang in self.frequencyTable:
+                self.conditionalProbabilityTable[lang] = {}
                 for first in self.frequencyTable[lang]:
                     self.conditionalProbabilityTable[lang][first] = {}
                     for second in self.frequencyTable[lang][first]:
@@ -273,6 +277,7 @@ class NGram:
                             self.conditionalProbabilityTable[lang][first][second][third] = conditionalProb
         if self.ngramSize == 2:
             for lang in self.frequencyTable:
+                self.conditionalProbabilityTable[lang] = {}
                 for first in self.frequencyTable[lang]:
                     self.conditionalProbabilityTable[lang][first] = {}
                     actualRowCount = len(
@@ -286,6 +291,7 @@ class NGram:
                         self.conditionalProbabilityTable[lang][first][second] = conditionalProb
         if self.ngramSize == 1:
             for lang in self.frequencyTable:
+                self.conditionalProbabilityTable[lang] = {}
                 actualRowCount = len(
                     self.frequencyTable[lang])
                 amountOfUnseenChars = self.totalRowCount - actualRowCount
@@ -367,11 +373,11 @@ class NGram:
 
         #print(self.getConditionalProbability('es', 'cao'))
 
-        #for lang in self.frequencyTable:
-         #    for x in self.frequencyTable[lang]:
-          #       for y in self.frequencyTable[lang][x]:
-           #          for z in self.frequencyTable[lang][x][y]:
-            #             if(self.frequencyTable[lang][x][y][z] > 0):
-             #                print()
-              #               print(x+y+z + ' --- ' +
-               #                    str(self.frequencyTable[lang][x][y][z]))
+        # for lang in self.frequencyTable:
+        #     for x in self.frequencyTable[lang]:
+        #         for y in self.frequencyTable[lang][x]:
+        #             for z in self.frequencyTable[lang][x][y]:
+        #                 if(self.frequencyTable[lang][x][y][z] > 0):
+        #                     print()
+        #                     print(x+y+z + ' --- ' +
+        #                           str(self.frequencyTable[lang][x][y][z]))
