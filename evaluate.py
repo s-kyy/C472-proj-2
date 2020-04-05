@@ -142,11 +142,19 @@ def testLine(ngram, tweet):
                 # Vocabulary = 0 (all lowercase)
                 if ngram.vocabularyType == '0':
                     if character.lower() in ngram.vocabulary:
-                        scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
+                        if (scores[lang] != 0.0):
+                            if (ngram.getConditionalProbability(lang, character) == 0.0):
+                                scores[lang] = 0.0
+                            else:
+                                scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
                 # Vocabulary = 1 (Upper and lowercase)
 
                 if character in ngram.vocabulary:
-                    scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
+                    if (scores[lang] != 0.0):
+                        if (ngram.getConditionalProbability(lang, character) == 0.0):
+                            scores[lang] = 0.0
+                        else:
+                            scores[lang] += math.log10(ngram.getConditionalProbability(lang, character))
 
         # Bigram: ngram = 2,
         if ngram.ngramSize == 2:
@@ -166,10 +174,16 @@ def testLine(ngram, tweet):
                 if previousChar is not None:
                     # Vocabulary = 2 (isalpha())
                     if previousChar in ngram.frequencyTable[lang]:
-                        scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
+                        if (scores[lang] != 0.0):
+                            if (ngram.getConditionalProbability(lang, previousChar+character) == 0.0):
+                                scores[lang] = 0.0
+                            else:
+                                scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
                     # Vocabulary = 0 (all lowercase)
                     # Vocabulary = 1 (Upper and lowercase)
-                    scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
+                    if (scores[lang] != 0.0):
+                        if (ngram.getConditionalProbability(lang, previousChar+character) != 0.0):
+                            scores[lang] += math.log10(ngram.getConditionalProbability(lang, previousChar+character))
                 previousChar = character
         # Trigram: ngram = 3
         if ngram.ngramSize == 3:
@@ -199,7 +213,11 @@ def testLine(ngram, tweet):
                 # Vocabulary = 2 (isalpha())
                 # Vocabulary = 0 (all lowercase)
                 # Vocabulary = 1 (Upper and lowercase)
-                scores[lang] += math.log10(ngram.getConditionalProbability(lang, firstChar+secondChar+character))
+                if (scores[lang] != 0.0):
+                    if (ngram.getConditionalProbability(lang, firstChar+secondChar+character) == 0.0):
+                        scores[lang] = 0.0
+                    else:
+                        scores[lang] += math.log10(ngram.getConditionalProbability(lang, firstChar+secondChar+character))
                 firstChar = secondChar
                 secondChar = character
     # End of score computation

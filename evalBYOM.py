@@ -155,13 +155,25 @@ def testLine(byom, tweet):
             # Either the word doesnt have any valid chars or its too long eg(a random assortment of chars, not a word)
             if(len(word) != 0 and len(word) < 51):
                 wordLengthArray.append(len(word))
-                scores[lang] += math.log10(byom.getConditionalProbability('count', lang, len(word)))
+                if (scores[lang] != 0.0):
+                    if (byom.getConditionalProbability('count', lang, len(word)) == 0.0):
+                        scores[lang] = 0.0
+                    else:
+                        scores[lang] += math.log10(byom.getConditionalProbability('count', lang, len(word)))
         # It's possible a tweet doesn't have any valid words
         if wordLengthArray:
             averageWordLengths = int(round(np.mean(wordLengthArray), 0))
-            scores[lang] += math.log10(byom.getConditionalProbability('mean', lang, averageWordLengths))
+            if (scores[lang] != 0.0):
+                    if (byom.getConditionalProbability('mean', lang, averageWordLengths) == 0.0):
+                        scores[lang] = 0.0
+                    else:
+                        scores[lang] += math.log10(byom.getConditionalProbability('mean', lang, averageWordLengths))
             stdvWordLengths = int(round(np.std(wordLengthArray), 0))
-            scores[lang] += math.log10(byom.getConditionalProbability('dev', lang, stdvWordLengths))
+            if (scores[lang] != 0.0):
+                    if (byom.getConditionalProbability('dev', lang, stdvWordLengths) == 0.0):
+                        scores[lang] = 0.0
+                    else:
+                        scores[lang] += math.log10(byom.getConditionalProbability('dev', lang, stdvWordLengths))
         wordLengthArray = []
     # End of score computation
 
