@@ -121,7 +121,7 @@ def testLine(byom, tweet):
 
     totalTrainingExamples = sum(byom.languageCounter.values())
 
-    # Initialize scores with priors, default is True (include priors)
+    # Initialize scores with priors
     if byom.prior == False:
         scores = {  'eu':0.0,
                     'ca':0.0, 

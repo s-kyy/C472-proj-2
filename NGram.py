@@ -22,7 +22,7 @@ Object Variables
     conditionalProbabilityTable (contains the conditional probs of all ngrams)
     languageCounter (specifies how many tweets come from each language)
     totalRowCount (this is to keep track of the isalpha vocab probabilities,
-    since we're building it dynamically we need to keep track of how many ngrams appear in each row so we can find the denominator)
+        since we're building it dynamically we need to keep track of how many ngrams appear in each row so we can find the denominator)
 
 Methods:
   constructVocabulary() -- This creates all of the letters that can be used with the vocabulary type.

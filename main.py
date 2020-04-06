@@ -22,7 +22,7 @@ When running on the command line, use the following form:
     eg: python main.py 1 3 0.1 training-tweets.txt test-tweets-given.txt 1 1
 
 Deliverable 1:
-    python main.py 2 1 0.05 training-tweets.txt test-tweets-given.txt 1 1
+    python main.py 1 1 0.05 training-tweets.txt test-tweets-given.txt 1 1
     python main.py 0 1 0.0 training-tweets.txt test-tweets-given.txt 1 0
     python main.py 1 2 0.5 training-tweets.txt test-tweets-given.txt 1 0
     python main.py 1 3 1.0 training-tweets.txt test-tweets-given.txt 1 0
