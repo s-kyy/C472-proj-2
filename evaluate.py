@@ -281,10 +281,13 @@ def evaluate(ngram):
 
     precisions = {} # Precision for each language
     recalls = {} # Recall for each language
+    F1 = {} #F1 metric for each langauge
 
     for lang in languages:
         precisions[lang] = computePrecision(resultsDF.loc[lang,lang], resultsDF.loc[lang,'rowsums'])
         recalls[lang] = computeRecall(resultsDF.loc[lang,lang], resultsDF.loc[lang,'colsums'])
+        F1[lang] = computeF1(precisions[lang],recalls[lang], B = 1 ) # Can change B here. 
+
 
     macroF1  = computeMacroF1() # Average F1 amongst all language classes
     weightF1 = computeWeightedF1() # Average F1 amongst all languages weighted on frequency of each language occuring in the test data. 
@@ -296,6 +299,8 @@ def evaluate(ngram):
                     str(precisions['es']) + '  ' + str(precisions['en']) + '  ' + str(precisions['pt']) + '\n' +
                     str(recalls['eu']) + '  ' + str(recalls['ca']) + '  ' + str(recalls['gl']) + '  ' + 
                     str(recalls['es']) + '  ' + str(recalls['en']) + '  ' + str(recalls['pt']) + '  ' + '\n' +
+                    str(F1['eu']) + '  ' + str(F1['ca']) + '  ' + str(F1['gl']) + '  ' + 
+                    str(F1['es']) + '  ' + str(F1['en']) + '  ' + str(F1['pt']) + '  ' + '\n' +
                     str(macroF1) + '  ' + str(weightF1))
     print("evaluation file completed")
     # End of evaluate() function
