@@ -12,3 +12,5 @@ GitHub:https://github.com/s-kyy/C472-proj-2
  d : smoothing factor, float > 0.0  
  P : [0 : don't include priors, 1: include priors] *For the purpose of analysis in Report; 1 by default.*  
  BYOM : [0 : don't use BYOM, 1: use BYOM] *0 by default*  
+
+Note: To see the F1 metric outputted to the evaluation text file, we made a new branch "F1" that has the code. This was for the sake being able to do the analysis in our report. The submitted code is the same as master. 
